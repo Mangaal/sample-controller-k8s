@@ -23,8 +23,8 @@ var (
 
 func addKnownTypes(sheme *runtime.Scheme) error {
 	sheme.AddKnownTypes(SchemeGroupVesrion,
-		&DeploymentResource{},
-		&DeploymentResourceList{},
+		&MyAppDeployment{},
+		&MyAppDeploymentList{},
 	)
 	metav1.AddToGroupVersion(sheme, SchemeGroupVesrion)
 
