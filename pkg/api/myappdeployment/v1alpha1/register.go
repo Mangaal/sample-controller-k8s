@@ -1,7 +1,7 @@
 package v1alpha1
 
 import (
-	"github.com/Mangaal/sample-controller-k8s/pkg/api/nextgen.k8s.com"
+	nextgen "github.com/Mangaal/sample-controller-k8s/pkg/api/MyAppDeployment"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
