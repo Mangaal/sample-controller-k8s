@@ -1,13 +1,14 @@
 package v1alpha1
 
 import (
-	nextgen "github.com/Mangaal/sample-controller-k8s/pkg/api/MyAppDeployment"
+	myappdeployment "sample-controller-k8s/pkg/api/MyAppDeployment"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-var SchemeGroupVesrion = schema.GroupVersion{Group: nextgen.GroupName, Version: "v1aplha1"}
+var SchemeGroupVesrion = schema.GroupVersion{Group: myappdeployment.GroupName, Version: "v1aplha1"}
 
 func Kind(kind string) schema.GroupKind {
 	return SchemeGroupVesrion.WithKind(kind).GroupKind()

@@ -1,4 +1,4 @@
-module github.com/Mangaal/sample-controller-k8s
+module sample-controller-k8s
 
 go 1.20
 
