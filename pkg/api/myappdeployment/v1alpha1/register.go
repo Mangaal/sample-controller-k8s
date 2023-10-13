@@ -1,7 +1,7 @@
 package v1alpha1
 
 import (
-	myappdeployment "sample-controller-k8s/pkg/api/MyAppDeployment"
+	"sample-controller-k8s/pkg/api/myappdeployment"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
