@@ -58,7 +58,7 @@ func NewController(ctx context.Context,
 	myAppDeploymentInformer informers.MyAppDeploymentInformer) *Controller {
 
 	utilruntime.Must(samplescheme.AddToScheme(scheme.Scheme))
-	fmt.Println("Creating event broadcaster")
+	fmt.Println("Creating event broadcaster is call")
 
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartStructuredLogging(0)
