@@ -54,14 +54,14 @@ func main() {
 	kubeShareInformerFactort := kubeinformers.NewSharedInformerFactory(kubernetesClinet, 30*time.Second)
 	sampleInformerFactory := informer.NewSharedInformerFactory(sampleClinetSet, 30*time.Second)
 
-	kubeShareInformerFactort.Start(ctx.Done())
-	sampleInformerFactory.Start(ctx.Done())
-
 	controller := controller.NewController(ctx,
 		kubernetesClinet, sampleClinetSet,
 		kubeShareInformerFactort.Apps().V1().Deployments(),
 		sampleInformerFactory.Nextgen().V1alpha1().MyAppDeployments(),
 	)
+
+	kubeShareInformerFactort.Start(ctx.Done())
+	sampleInformerFactory.Start(ctx.Done())
 
 	if err := controller.Run(ctx, 2); err != nil {
 

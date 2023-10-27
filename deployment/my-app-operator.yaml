@@ -50,7 +50,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: my-app-operator-sa
-    namespace: default  # You can specify a different namespace if needed
+    namespace: myappdeployment  # You can specify a different namespace if needed
 roleRef:
   kind: ClusterRole
   name: my-app-operator-clusterrole
