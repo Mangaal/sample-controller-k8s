@@ -7,6 +7,10 @@ import (
 	"reflect"
 	"sample-controller-k8s/pkg/api/myappdeployment/v1alpha1"
 	clinetset "sample-controller-k8s/pkg/clinet/clientset/versioned"
+
+	"k8s.io/client-go/kubernetes/scheme"
+
+	samplescheme "sample-controller-k8s/pkg/clinet/clientset/versioned/scheme"
 	informers "sample-controller-k8s/pkg/clinet/informers/externalversions/myappdeployment/v1alpha1"
 	listers "sample-controller-k8s/pkg/clinet/listers/myappdeployment/v1alpha1"
 	"time"
@@ -15,11 +19,15 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 
 	appsinformers "k8s.io/client-go/informers/apps/v1"
 	"k8s.io/client-go/kubernetes"
+	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 
 	appslisters "k8s.io/client-go/listers/apps/v1"
@@ -37,13 +45,25 @@ type Controller struct {
 	MyAppDeploymentSynced cache.InformerSynced
 
 	Workqueue workqueue.RateLimitingInterface
+
+	recorder record.EventRecorder
 }
+
+const controllerAgentName = "sample-controller"
 
 func NewController(ctx context.Context,
 	kubeclientset kubernetes.Interface,
 	sampleclientset clinetset.Interface,
 	deploymentInformer appsinformers.DeploymentInformer,
 	myAppDeploymentInformer informers.MyAppDeploymentInformer) *Controller {
+
+	utilruntime.Must(samplescheme.AddToScheme(scheme.Scheme))
+	fmt.Println("Creating event broadcaster")
+
+	eventBroadcaster := record.NewBroadcaster()
+	eventBroadcaster.StartStructuredLogging(0)
+	eventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: kubeclientset.CoreV1().Events("")})
+	recorder := eventBroadcaster.NewRecorder(scheme.Scheme, corev1.EventSource{Component: controllerAgentName})
 
 	ratelimiter := workqueue.NewMaxOfRateLimiter(
 		workqueue.NewItemExponentialFailureRateLimiter(5*time.Millisecond, 1000*time.Second),
@@ -58,6 +78,7 @@ func NewController(ctx context.Context,
 		MyAppDeploymentLister: myAppDeploymentInformer.Lister(),
 		MyAppDeploymentSynced: myAppDeploymentInformer.Informer().HasSynced,
 		Workqueue:             workqueue.NewRateLimitingQueue(ratelimiter),
+		recorder:              recorder,
 	}
 
 	myAppDeploymentInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
