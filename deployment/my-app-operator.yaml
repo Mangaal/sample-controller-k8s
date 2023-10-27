@@ -28,8 +28,7 @@ spec:
       containers:
       - image: mangaaldochub/myappdeployment:v1alpha1
         name: myappdeployment
-        resources: {}
-      serviceA  
+        resources: {}  
 status: {}
 ---
 kind: ClusterRole
