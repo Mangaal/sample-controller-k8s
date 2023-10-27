@@ -1,0 +1,8 @@
+apiVersion: nextgen.k8s.com/v1alpha1
+kind: MyAppDeployment
+metadata:
+  name: example-app
+spec:
+  deploymentName: example-foo
+  deploymentImage: nginx
+  replicas: 3
