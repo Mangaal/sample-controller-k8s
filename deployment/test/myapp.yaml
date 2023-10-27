@@ -6,3 +6,4 @@ spec:
   deploymentName: example-foo
   deploymentImage: nginx
   replicas: 3
+status: {}
