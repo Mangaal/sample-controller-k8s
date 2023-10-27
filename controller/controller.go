@@ -11,6 +11,7 @@ import (
 	listers "sample-controller-k8s/pkg/clinet/listers/myappdeployment/v1alpha1"
 	"time"
 
+	"golang.org/x/time/rate"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -44,6 +45,11 @@ func NewController(ctx context.Context,
 	deploymentInformer appsinformers.DeploymentInformer,
 	myAppDeploymentInformer informers.MyAppDeploymentInformer) *Controller {
 
+	ratelimiter := workqueue.NewMaxOfRateLimiter(
+		workqueue.NewItemExponentialFailureRateLimiter(5*time.Millisecond, 1000*time.Second),
+		&workqueue.BucketRateLimiter{Limiter: rate.NewLimiter(rate.Limit(50), 300)},
+	)
+
 	controller := &Controller{
 		KubeClinetSet:         kubeclientset,
 		SampleClinetSet:       sampleclientset,
@@ -51,7 +57,7 @@ func NewController(ctx context.Context,
 		DeploymentSynced:      deploymentInformer.Informer().HasSynced,
 		MyAppDeploymentLister: myAppDeploymentInformer.Lister(),
 		MyAppDeploymentSynced: myAppDeploymentInformer.Informer().HasSynced,
-		Workqueue:             workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "MyAppDeployment"),
+		Workqueue:             workqueue.NewRateLimitingQueue(ratelimiter),
 	}
 
 	myAppDeploymentInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
