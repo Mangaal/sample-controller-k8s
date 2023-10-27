@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: myappdeployment
+  name: my-app-operator-sa
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: my-operator
+  name: my-operator
+  namespace: myappdeployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-operator
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: my-operator
+    spec:
+    serviceAccountName: my-app-operator-sa
+      containers:
+      - image: mangaaldochub/myappdeployment:v1alpha1
+        name: myappdeployment
+        resources: {}
+      serviceA  
+status: {}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: my-app-operator-clusterrole
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["myappdeployments.nextgen.k8s.com"]
+    resources: ["myappdeployments"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: my-app-operator-clusterrolebinding
+subjects:
+  - kind: ServiceAccount
+    name: my-app-operator-sa
+    namespace: default  # You can specify a different namespace if needed
+roleRef:
+  kind: ClusterRole
+  name: my-app-operator-clusterrole
+  apiGroup: rbac.authorization.k8s.io
