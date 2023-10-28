@@ -12,6 +12,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/klog/v2"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
 )
 
@@ -53,7 +54,7 @@ func main() {
 	kubeShareInformerFactort := kubeinformers.NewSharedInformerFactory(kubernetesClinet, 30*time.Second)
 	sampleInformerFactory := informer.NewSharedInformerFactory(sampleClinetSet, 30*time.Second)
 
-	controller.NewController(ctx,
+	controller := controller.NewController(ctx,
 		kubernetesClinet,
 		sampleClinetSet,
 		kubeShareInformerFactort.Apps().V1().Deployments(),
@@ -63,11 +64,11 @@ func main() {
 	kubeShareInformerFactort.Start(ctx.Done())
 	sampleInformerFactory.Start(ctx.Done())
 
-	/*if err := controller.Run(ctx, 2); err != nil {
+	if err := controller.Run(ctx, 2); err != nil {
 
 		fmt.Println("Error running Controller: ", err)
 
 		klog.FlushAndExit(klog.ExitFlushTimeout, 1)
 
-	}*/
+	}
 }

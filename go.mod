@@ -11,4 +11,7 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3
 )
 
-require golang.org/x/net v0.17.0 // indirect
+require (
+	golang.org/x/net v0.17.0 // indirect
+	k8s.io/klog/v2 v2.100.1
+)
