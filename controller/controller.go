@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"reflect"
 	"sample-controller-k8s/pkg/api/myappdeployment/v1alpha1"
-	clinetset "sample-controller-k8s/pkg/clinet/clientset/versioned"
+
+	//clinetset "sample-controller-k8s/pkg/clinet/clientset/versioned"
 
 	"k8s.io/client-go/kubernetes/scheme"
 
-	samplescheme "sample-controller-k8s/pkg/clinet/clientset/versioned/scheme"
-	informers "sample-controller-k8s/pkg/clinet/informers/externalversions/myappdeployment/v1alpha1"
-	listers "sample-controller-k8s/pkg/clinet/listers/myappdeployment/v1alpha1"
+	//samplescheme "sample-controller-k8s/pkg/clinet/clientset/versioned/scheme"
+	//informers "sample-controller-k8s/pkg/clinet/informers/externalversions/myappdeployment/v1alpha1"
+	//listers "sample-controller-k8s/pkg/clinet/listers/myappdeployment/v1alpha1"
 	"time"
 
 	"golang.org/x/time/rate"

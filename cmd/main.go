@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"sample-controller-k8s/controller"
-	clinetset "sample-controller-k8s/pkg/clinet/clientset/versioned"
-	informer "sample-controller-k8s/pkg/clinet/informers/externalversions"
+	//clinetset "sample-controller-k8s/pkg/clinet/clientset/versioned"
+	//informer "sample-controller-k8s/pkg/clinet/informers/externalversions"
 	"time"
 
 	kubeinformers "k8s.io/client-go/informers"
