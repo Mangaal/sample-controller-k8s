@@ -1,5 +1,5 @@
 # Stage 1: Build the Go application
-FROM golang:1.19 AS build
+FROM golang:1.20 AS build
 
 # Set the working directory within the container
 WORKDIR /app
@@ -12,10 +12,10 @@ RUN go mod download
 COPY . .
 
 # Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux go build -o myapp ./cmd
+RUN CGO_ENABLED=0 GOOS=linux go build -o myapp 
 
 # Stage 2: Create a minimal production image
-FROM alpine:latest
+FROM alpine:20
 
 # Set the working directory within the container
 WORKDIR /app
