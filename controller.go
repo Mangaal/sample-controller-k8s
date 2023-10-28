@@ -314,6 +314,8 @@ func (c *Controller) handleObject(obj interface{}) {
 		}
 	}
 
+	fmt.Println("object name", object.GetName())
+
 	if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
 
 		if ownerRef.Kind != "MyAppDeployment" {
