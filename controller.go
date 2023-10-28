@@ -115,7 +115,7 @@ func (c *Controller) Run(ctx context.Context, workers int) error {
 	// Wait for the caches to be synced before starting workers
 	fmt.Println("Waiting for informer caches to sync")
 
-	if ok := cache.WaitForCacheSync(ctx.Done(), c.DeploymentSynced, c.MyAppDeploymentSynced); !ok {
+	if ok := cache.WaitForCacheSync(ctx.Done(), c.DeploymentSynced); !ok {
 		return fmt.Errorf("failed to wait for caches to sync")
 	}
 
