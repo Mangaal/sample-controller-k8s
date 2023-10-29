@@ -1,14 +1,14 @@
 package v1alpha1
 
 import (
-	myappdeploymentv1alpha1 "sample-controller-k8s/pkg/apis/myappdeployment"
+	controller1alpha1 "sample-controller-k8s/pkg/apis/myappdeployment"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-var SchemeGroupVersion = schema.GroupVersion{Group: myappdeploymentv1alpha1.GroupName, Version: "v1aplha1"}
+var SchemeGroupVersion = schema.GroupVersion{Group: controller1alpha1.GroupName, Version: "v1aplha1"}
 
 func Kind(kind string) schema.GroupKind {
 	return SchemeGroupVersion.WithKind(kind).GroupKind()

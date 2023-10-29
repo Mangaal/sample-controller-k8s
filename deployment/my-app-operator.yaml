@@ -26,7 +26,7 @@ spec:
     spec:
       serviceAccountName: my-app-operator-sa
       containers:
-      - image: mangaaldochub/myappdeployment:v1alpha1
+      - image: mangaaldochub/myappdeployment:v1alpha12
         name: myappdeployment
         resources: {}  
 status: {}
