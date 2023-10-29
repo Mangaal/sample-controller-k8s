@@ -20,7 +20,7 @@ package v1alpha1
 
 import (
 	"net/http"
-	v1alpha1 "sample-controller-k8s/pkg/api/myappdeployment/v1alpha1"
+	v1alpha1 "sample-controller-k8s/pkg/apis/myappdeployment/v1alpha1"
 	"sample-controller-k8s/pkg/clinet/clientset/versioned/scheme"
 
 	rest "k8s.io/client-go/rest"

@@ -20,7 +20,7 @@ package v1alpha1
 
 import (
 	"context"
-	myappdeploymentv1alpha1 "sample-controller-k8s/pkg/api/myappdeployment/v1alpha1"
+	myappdeploymentv1alpha1 "sample-controller-k8s/pkg/apis/myappdeployment/v1alpha1"
 	versioned "sample-controller-k8s/pkg/clinet/clientset/versioned"
 	internalinterfaces "sample-controller-k8s/pkg/clinet/informers/externalversions/internalinterfaces"
 	v1alpha1 "sample-controller-k8s/pkg/clinet/listers/myappdeployment/v1alpha1"

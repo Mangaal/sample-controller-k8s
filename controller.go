@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"sample-controller-k8s/pkg/api/myappdeployment/v1alpha1"
+	"sample-controller-k8s/pkg/apis/myappdeployment/v1alpha1"
 	clinetset "sample-controller-k8s/pkg/clinet/clientset/versioned"
 
 	"k8s.io/client-go/kubernetes/scheme"

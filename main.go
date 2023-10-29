@@ -61,7 +61,7 @@ func main() {
 	)
 
 	kubeShareInformerFactort.Start(ctx.Done())
-	//sampleInformerFactory.Start(ctx.Done())
+	sampleInformerFactory.Start(ctx.Done())
 
 	if err := controller.Run(ctx, 2); err != nil {
 
