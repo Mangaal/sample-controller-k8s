@@ -5,28 +5,36 @@ import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type MyAppDeployment struct {
+// +genclient
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// Foo is a specification for a Foo resource
+type Foo struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   MyAppDeploymentSpec   `json:"spec"`
-	Status MyAppDeploymentStatus `json:"status"`
+	Spec   FooSpec   `json:"spec"`
+	Status FooStatus `json:"status"`
 }
 
-type MyAppDeploymentSpec struct {
+// FooSpec is the spec for a Foo resource
+type FooSpec struct {
 	DeploymentName  string `json:"deploymentName"`
 	DeploymentImage string `json:"deploymentImage"`
 	Replicas        *int32 `json:"replicas"`
 }
 
-type MyAppDeploymentStatus struct {
-	AvailableReplica int32 `json:"availableReplica"`
+// FooStatus is the status for a Foo resource
+type FooStatus struct {
+	AvailableReplicas int32 `json:"availableReplicas"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-type MyAppDeploymentList struct {
+
+// FooList is a list of Foo resources
+type FooList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []MyAppDeployment `json:"items"`
+	Items []Foo `json:"items"`
 }

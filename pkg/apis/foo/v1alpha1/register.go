@@ -25,8 +25,8 @@ var (
 
 func addKnownTypes(sheme *runtime.Scheme) error {
 	sheme.AddKnownTypes(SchemeGroupVersion,
-		&MyAppDeployment{},
-		&MyAppDeploymentList{},
+		&Foo{},
+		&FooList{},
 	)
 	metav1.AddToGroupVersion(sheme, SchemeGroupVersion)
 
