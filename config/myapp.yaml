@@ -1,0 +1,11 @@
+apiVersion: nextgen.k8s.test/v1alpha1
+kind: AppReplica
+metadata:
+  name: app
+spec:
+  deploymentName: example-foo
+  replicas: 2
+  deploymentImage: "kalk"
+status: 
+  availableReplicas: 0
+

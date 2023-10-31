@@ -38,7 +38,7 @@ func main() {
 
 	sampleInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
-			newobj := obj.(myappv1alpha1.AppReplica)
+			newobj := obj.(*myappv1alpha1.AppReplica)
 			fmt.Println(newobj.Name)
 		},
 	})
