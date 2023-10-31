@@ -5,7 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	resource "sample-controller-k8s/pkg/apis/resource"
+	resource "sample-controller-k8s/pkg/apis/appreplica"
 )
 
 // SchemeGroupVersion is group version used to register these objects
