@@ -43,12 +43,12 @@ func main() {
 		},
 	})
 
-	sampleInformerFactory.Start(ctx.Done())
+	go sampleInformerFactory.Start(ctx.Done())
 
 	if ok := cache.WaitForCacheSync(ctx.Done(), sampleInformer.HasSynced); !ok {
 		fmt.Println("failed to wait for caches to sync")
 
 		return
 	}
-
+	select {}
 }
