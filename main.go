@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 
+	myappv1alpha1 "sample-controller-k8s/pkg/apis/appreplica/v1alpha1"
 	clinetset "sample-controller-k8s/pkg/client/clientset/versioned"
 	informer "sample-controller-k8s/pkg/client/informers/externalversions"
 	"time"
 
-	kubeinformers "k8s.io/client-go/informers"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
 )
@@ -35,13 +35,6 @@ func main() {
 		}
 	}
 
-	kubernetesClinet, err := kubernetes.NewForConfig(cfg)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
 	sampleClinetSet, err := clinetset.NewForConfig(cfg)
 
 	if err != nil {
@@ -49,10 +42,23 @@ func main() {
 		return
 	}
 
-	kubeShareInformerFactort := kubeinformers.NewSharedInformerFactory(kubernetesClinet, 30*time.Second)
 	sampleInformerFactory := informer.NewSharedInformerFactory(sampleClinetSet, 30*time.Second)
 
-	kubeShareInformerFactort.Start(ctx.Done())
+	sampleInformer := sampleInformerFactory.Nextgen().V1alpha1().AppReplicas().Informer()
+
+	sampleInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc: func(obj interface{}) {
+			newobj := obj.(myappv1alpha1.AppReplica)
+			fmt.Println(newobj.Name)
+		},
+	})
+
 	sampleInformerFactory.Start(ctx.Done())
+
+	if ok := cache.WaitForCacheSync(ctx.Done(), sampleInformer.HasSynced); !ok {
+		fmt.Println("failed to wait for caches to sync")
+
+		return
+	}
 
 }
