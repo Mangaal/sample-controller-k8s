@@ -10,7 +10,6 @@ import (
 
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
-	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
 )
 
@@ -19,20 +18,11 @@ func main() {
 	// set up signals so we handle the shutdown signal gracefully
 	ctx := signals.SetupSignalHandler()
 
-	cfg, err := clientcmd.BuildConfigFromFlags("", "/root/.kube/config")
+	cfg, err := rest.InClusterConfig()
 
 	if err != nil {
-
 		fmt.Println(err)
-
-		err = nil
-
-		cfg, err = rest.InClusterConfig()
-
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+		return
 	}
 
 	sampleClinetSet, err := clinetset.NewForConfig(cfg)
