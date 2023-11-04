@@ -270,6 +270,7 @@ func (c *Controller) syncHandler(key string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(" deployment  get error", err)
 
 	// If the Deployment is not controlled by this AppReplicas resource, we should log
 	// a warning to the event recorder and return error msg.
@@ -284,7 +285,7 @@ func (c *Controller) syncHandler(key string) error {
 	// should update the Deployment resource.
 	if (appReplica.Spec.Replicas != nil && *appReplica.Spec.Replicas != *deployment.Spec.Replicas) || (len(deployment.Spec.Template.Spec.Containers) != 1 && deployment.Spec.Template.Spec.Containers[0].Image != appReplica.Spec.DeploymentImage) {
 		klog.V(4).Infof("AppReplica %s replicas: %d, deployment replicas: %d", name, *appReplica.Spec.Replicas, *deployment.Spec.Replicas)
-
+		fmt.Println(appReplica)
 		klog.V(4).Infof("AppReplica %s image: %s, deployment image: %s", name, appReplica.Spec.DeploymentImage, deployment.Spec.Template.Spec.Containers[0].Image)
 		deployment, err = c.kubeclinetset.AppsV1().Deployments(appReplica.Namespace).Update(context.TODO(), newDeployment(appReplica), metav1.UpdateOptions{})
 	}
@@ -295,7 +296,7 @@ func (c *Controller) syncHandler(key string) error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Println(" deployment update error", err)
 	// Finally, we update the status block of the AppReplicas resource to reflect the
 	// current state of the world
 	err = c.updateAppReplicaStatus(appReplica, deployment)
@@ -317,6 +318,7 @@ func (c *Controller) updateAppReplicaStatus(appReplica *appsv1alpha1.AppReplica,
 	// UpdateStatus will not allow changes to the Spec of the resource,
 	// which is ideal for ensuring nothing other than resource status has been updated.
 	_, err := c.appclinetset.NextgenV1alpha1().AppReplicas(appReplica.Namespace).UpdateStatus(context.TODO(), appReplicaCopy, metav1.UpdateOptions{})
+	fmt.Println(" status update error", err)
 	return err
 }
 
