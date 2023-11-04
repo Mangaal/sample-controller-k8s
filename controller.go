@@ -344,7 +344,7 @@ func newDeployment(appReplica *appsv1alpha1.AppReplica) *appsv1.Deployment {
 					Containers: []corev1.Container{
 						{
 							Name:  appReplica.Spec.DeploymentName,
-							Image: appReplica.Spec.DeploymentName,
+							Image: appReplica.Spec.DeploymentImage,
 						},
 					},
 				},
