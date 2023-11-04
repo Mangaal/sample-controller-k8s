@@ -3,20 +3,21 @@ package main
 import (
 	"fmt"
 
-	myappv1alpha1 "sample-controller-k8s/pkg/apis/appreplica/v1alpha1"
 	clinetset "sample-controller-k8s/pkg/client/clientset/versioned"
 	informer "sample-controller-k8s/pkg/client/informers/externalversions"
 	"time"
 
+	kubeinformers "k8s.io/client-go/informers"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/cache"
+	"k8s.io/klog"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
 )
 
 func main() {
 
 	// set up signals so we handle the shutdown signal gracefully
-	ctx := signals.SetupSignalHandler()
+	stopCh := signals.SetupSignalHandler()
 
 	cfg, err := rest.InClusterConfig()
 
@@ -25,30 +26,31 @@ func main() {
 		return
 	}
 
-	sampleClinetSet, err := clinetset.NewForConfig(cfg)
+	kubeClient, err := kubernetes.NewForConfig(cfg)
+	if err != nil {
+		klog.Fatalf("Error building kubernetes clientset: %s", err.Error())
+	}
+
+	appreplicaClinetSet, err := clinetset.NewForConfig(cfg)
 
 	if err != nil {
-		fmt.Println(err)
-		return
+		klog.Fatalf("Error building appreplica clientset: %s", err.Error())
+
 	}
 
-	sampleInformerFactory := informer.NewSharedInformerFactory(sampleClinetSet, 30*time.Second)
+	kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
 
-	sampleInformer := sampleInformerFactory.Nextgen().V1alpha1().AppReplicas().Informer()
+	appreplicaInformerFactory := informer.NewSharedInformerFactory(appreplicaClinetSet, 30*time.Second)
 
-	sampleInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc: func(obj interface{}) {
-			newobj := obj.(*myappv1alpha1.AppReplica)
-			fmt.Println(newobj.Name)
-		},
-	})
+	controller := NewController(kubeClient, appreplicaClinetSet,
+		appreplicaInformerFactory.Nextgen().V1alpha1().AppReplicas(),
+		kubeInformerFactory.Apps().V1().Deployments())
 
-	go sampleInformerFactory.Start(ctx.Done())
+	kubeInformerFactory.Start(stopCh.Done())
+	appreplicaInformerFactory.Start(stopCh.Done())
 
-	if ok := cache.WaitForCacheSync(ctx.Done(), sampleInformer.HasSynced); !ok {
-		fmt.Println("failed to wait for caches to sync")
-
-		return
+	if err = controller.Run(2, stopCh.Done()); err != nil {
+		klog.Fatalf("Error running controller: %s", err.Error())
 	}
-	select {}
+
 }
