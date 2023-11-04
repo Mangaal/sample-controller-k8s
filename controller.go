@@ -284,8 +284,10 @@ func (c *Controller) syncHandler(key string) error {
 	// number does not equal the current desired replicas on the Deployment, we
 	// should update the Deployment resource.
 	if (appReplica.Spec.Replicas != nil && *appReplica.Spec.Replicas != *deployment.Spec.Replicas) || len(deployment.Spec.Template.Spec.Containers) != 1 || deployment.Spec.Template.Spec.Containers[0].Image != appReplica.Spec.DeploymentImage {
-		fmt.Printf("AppReplica %s replicas: %d, deployment replicas: %d", name, *appReplica.Spec.Replicas, *deployment.Spec.Replicas)
-		fmt.Printf("AppReplica %s image: %s, deployment image: %s", name, appReplica.Spec.DeploymentImage, deployment.Spec.Template.Spec.Containers[0].Image)
+
+		fmt.Println("syncing AppReplica", name)
+		fmt.Printf("AppReplica %s replicas: %d, deployment replicas: %d \n", name, *appReplica.Spec.Replicas, *deployment.Spec.Replicas)
+		fmt.Printf("AppReplica %s image: %s, deployment image: %s \n", name, appReplica.Spec.DeploymentImage, deployment.Spec.Template.Spec.Containers[0].Image)
 		deployment, err = c.kubeclinetset.AppsV1().Deployments(appReplica.Namespace).Update(context.TODO(), newDeployment(appReplica), metav1.UpdateOptions{})
 	}
 
