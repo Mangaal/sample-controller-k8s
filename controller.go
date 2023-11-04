@@ -238,6 +238,8 @@ func (c *Controller) syncHandler(key string) error {
 	if err != nil {
 		// The AppReplicas resource may no longer exist, in which case we stop
 		// processing.
+
+		fmt.Println(namespace, name, "not found")
 		if errors.IsNotFound(err) {
 			utilruntime.HandleError(fmt.Errorf("AppReplicas '%s' in work queue no longer exists", key))
 			return nil
