@@ -5,7 +5,7 @@ metadata:
 spec:
   deploymentName: example-foo
   replicas: 2
-  deploymentImage: "kalk"
+  deploymentImage: "nginx"
 status: 
   availableReplicas: 0
 

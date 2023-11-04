@@ -57,7 +57,7 @@ func NewController(
 		appLister: appReplicaInformer.Lister(),
 		appSynced: appReplicaInformer.Informer().HasSynced,
 
-		workqueue: workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Foos"),
+		workqueue: workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "AppReplicas"),
 	}
 
 	klog.Info("Setting up event handlers")
@@ -106,7 +106,7 @@ func (c *Controller) handleObject(obj interface{}) {
 	}
 	klog.V(4).Infof("Processing object: %s", object.GetName())
 	if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
-		// If this object is not owned by a Foo, we should not do anything more
+		// If this object is not owned by a AppReplicas, we should not do anything more
 		// with it.
 		if ownerRef.Kind != "AppReplica" {
 			return
@@ -143,7 +143,7 @@ func (c *Controller) Run(workers int, stopCh <-chan struct{}) error {
 	defer c.workqueue.ShutDown()
 
 	// Start the informer factories to begin populating the informer caches
-	klog.Info("Starting Foo controller")
+	klog.Info("Starting AppReplicas controller")
 
 	// Wait for the caches to be synced before starting workers
 	klog.Info("Waiting for informer caches to sync")
@@ -152,7 +152,7 @@ func (c *Controller) Run(workers int, stopCh <-chan struct{}) error {
 	}
 
 	klog.Info("Starting workers")
-	// Launch two workers to process Foo resources
+	// Launch two workers to process AppReplicas resources
 	for i := 0; i < workers; i++ {
 		go wait.Until(c.runWorker, time.Second, stopCh)
 	}
@@ -204,7 +204,7 @@ func (c *Controller) processNextWorkItem() bool {
 			return nil
 		}
 		// Run the syncHandler, passing it the namespace/name string of the
-		// Foo resource to be synced.
+		// AppReplicas resource to be synced.
 		if err := c.syncHandler(key); err != nil {
 			// Put the item back on the workqueue to handle any transient errors.
 			c.workqueue.AddRateLimited(key)
@@ -233,13 +233,13 @@ func (c *Controller) syncHandler(key string) error {
 		return nil
 	}
 
-	// Get the Foo resource with this namespace/name
+	// Get the AppReplicas resource with this namespace/name
 	appReplica, err := c.appLister.AppReplicas(namespace).Get(name)
 	if err != nil {
-		// The Foo resource may no longer exist, in which case we stop
+		// The AppReplicas resource may no longer exist, in which case we stop
 		// processing.
 		if errors.IsNotFound(err) {
-			utilruntime.HandleError(fmt.Errorf("foo '%s' in work queue no longer exists", key))
+			utilruntime.HandleError(fmt.Errorf("AppReplicas '%s' in work queue no longer exists", key))
 			return nil
 		}
 
@@ -255,7 +255,7 @@ func (c *Controller) syncHandler(key string) error {
 		return nil
 	}
 
-	// Get the deployment with the name specified in Foo.spec
+	// Get the deployment with the name specified in AppReplicas.spec
 	deployment, err := c.deploymentLister.Deployments(appReplica.Namespace).Get(deploymentName)
 	// If the resource doesn't exist, we'll create it
 	if errors.IsNotFound(err) {
@@ -269,7 +269,7 @@ func (c *Controller) syncHandler(key string) error {
 		return err
 	}
 
-	// If the Deployment is not controlled by this Foo resource, we should log
+	// If the Deployment is not controlled by this AppReplicas resource, we should log
 	// a warning to the event recorder and return error msg.
 	if !metav1.IsControlledBy(deployment, appReplica) {
 		msg := fmt.Sprintf(MessageResourceExists, deployment.Name)
@@ -277,13 +277,13 @@ func (c *Controller) syncHandler(key string) error {
 		return fmt.Errorf("%s", msg)
 	}
 
-	// If this number of the replicas on the Foo resource is specified, and the
+	// If this number of the replicas on the AppReplicas resource is specified, and the
 	// number does not equal the current desired replicas on the Deployment, we
 	// should update the Deployment resource.
-	if (appReplica.Spec.Replicas != nil && *appReplica.Spec.Replicas != *deployment.Spec.Replicas) || (len(*&deployment.Spec.Template.Spec.Containers) != 1 && *&deployment.Spec.Template.Spec.Containers[0].Image != appReplica.Spec.DeploymentImage) {
+	if (appReplica.Spec.Replicas != nil && *appReplica.Spec.Replicas != *deployment.Spec.Replicas) || (len(deployment.Spec.Template.Spec.Containers) != 1 && deployment.Spec.Template.Spec.Containers[0].Image != appReplica.Spec.DeploymentImage) {
 		klog.V(4).Infof("AppReplica %s replicas: %d, deployment replicas: %d", name, *appReplica.Spec.Replicas, *deployment.Spec.Replicas)
 
-		klog.V(4).Infof("AppReplica %s image: %d, deployment image: %d", name, *&appReplica.Spec.DeploymentImage, *&deployment.Spec.Template.Spec.Containers[0].Image != appReplica.Spec.DeploymentImage)
+		klog.V(4).Infof("AppReplica %s image: %s, deployment image: %s", name, appReplica.Spec.DeploymentImage, deployment.Spec.Template.Spec.Containers[0].Image)
 		deployment, err = c.kubeclinetset.AppsV1().Deployments(appReplica.Namespace).Update(context.TODO(), newDeployment(appReplica), metav1.UpdateOptions{})
 	}
 
@@ -294,9 +294,9 @@ func (c *Controller) syncHandler(key string) error {
 		return err
 	}
 
-	// Finally, we update the status block of the Foo resource to reflect the
+	// Finally, we update the status block of the AppReplicas resource to reflect the
 	// current state of the world
-	err = c.updateFooStatus(appReplica, deployment)
+	err = c.updateAppReplicaStatus(appReplica, deployment)
 	if err != nil {
 		return err
 	}
@@ -304,14 +304,14 @@ func (c *Controller) syncHandler(key string) error {
 	return nil
 }
 
-func (c *Controller) updateFooStatus(appReplica *appsv1alpha1.AppReplica, deployment *appsv1.Deployment) error {
+func (c *Controller) updateAppReplicaStatus(appReplica *appsv1alpha1.AppReplica, deployment *appsv1.Deployment) error {
 	// NEVER modify objects from the store. It's a read-only, local cache.
 	// You can use DeepCopy() to make a deep copy of original object and modify this copy
 	// Or create a copy manually for better performance
 	appReplicaCopy := appReplica.DeepCopy()
 	appReplicaCopy.Status.AvailableReplicas = deployment.Status.AvailableReplicas
 	// If the CustomResourceSubresources feature gate is not enabled,
-	// we must use Update instead of UpdateStatus to update the Status block of the Foo resource.
+	// we must use Update instead of UpdateStatus to update the Status block of the AppReplica resource.
 	// UpdateStatus will not allow changes to the Spec of the resource,
 	// which is ideal for ensuring nothing other than resource status has been updated.
 	_, err := c.appclinetset.NextgenV1alpha1().AppReplicas(appReplica.Namespace).UpdateStatus(context.TODO(), appReplicaCopy, metav1.UpdateOptions{})
