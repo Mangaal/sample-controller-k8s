@@ -1,33 +1,23 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   creationTimestamp: "2023-11-04T10:04:08Z"
   labels:
     run: test
   name: test
-  namespace: default
-  resourceVersion: "31990"
-  uid: 3b7af93f-a974-456d-8aa8-4ad012549c58
+  namespace: sample-replica-mangaal
 spec:
-  containers:
-  - image: mangaaldochub/myappdeployment:v1
-    imagePullPolicy: IfNotPresent
-    name: test
-    resources: {}
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: kube-api-access-n98tj
-      readOnly: true
-  dnsPolicy: ClusterFirst
-  enableServiceLinks: true
-  nodeName: minikube
-  preemptionPolicy: PreemptLowerPriority
-  priority: 0
-  restartPolicy: Always
-  schedulerName: default-scheduler
-  securityContext: {}
-  serviceAccount: default
-  serviceAccountName: default
-  terminationGracePeriodSeconds: 30
+  replicas: 1
+  selector:
+    matchLabels:
+      run: test
+  template:
+    metadata:
+      labels:
+        run: test
+    spec:
+      serviceAccountName: replica-controller-sa  # Set the desired service account name
+      containers:
+      - image: mangaaldochub/myappdeployment:v1
+        imagePullPolicy: IfNotPresent
+        name: test
