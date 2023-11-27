@@ -5,6 +5,12 @@ metadata:
     argocd.argoproj.io/managed-by: openshift-gitops
   name: sample-replica-mangaal
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: replica-controller-sa
+  namespace: sample-replica-mangaal
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
