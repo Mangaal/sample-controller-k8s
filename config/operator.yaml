@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   creationTimestamp: "2023-11-04T10:04:08Z"
   labels:
-    run: test
+    run: test-sample
   name: test
   namespace: sample-replica-mangaal
 spec:
